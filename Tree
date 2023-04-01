@@ -1,0 +1,238 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+struct node
+{
+    struct node *lchild;
+    int data;
+    struct node *rchild;
+}*root = NULL;
+
+struct queue
+{
+    int size;
+    int front;
+    int rera;
+    struct node **q;
+};
+
+struct stack
+{
+    int size;
+    int top;
+    struct node **s;
+};
+
+void create_queue (struct queue *q)
+{
+    q->size = 100;
+    q->front = q->rera = 0;
+    q->q = (struct node**)malloc(q->size*sizeof(struct node*));
+}
+void enqueue(struct queue *q , struct node *x)
+{
+    if(q->rera == q->size -1)
+    {
+        printf("queue is full");
+    }
+    else
+    {
+        q->rera++;
+        q->q[q->rera] = x;
+    }
+}
+
+struct node *dequeue(struct queue *q)
+{
+    struct node *x = NULL;
+    if(q->front == q->rera)
+    {
+        printf("queue is empty");
+    }
+    else
+    {
+        q->front++;
+        x = q->q[q->front];
+    }
+    return x;
+}
+
+int isempty_queue(struct queue q)
+{
+    return q.front == q.rera;
+}
+
+void Create_stack(struct stack *st)
+{
+    st->size = 100;
+    st->top = -1;
+    st->s = (struct node**)malloc(st->size*sizeof(struct node*));
+}
+
+void push(struct stack *st , struct node *x)
+{
+    if(st->top == st->size-1)
+    {
+        printf("stack is full");
+    }
+    else
+    {
+        st->top++;
+        st->s[st->top] = x;
+    }
+}
+
+struct node *pop(struct stack *st)
+{
+    struct node *x = NULL;
+    if(st->top == -1)
+    {
+        printf("stack is empty");
+    }
+    else
+    {
+        x = st->s[st->top--];
+    }
+    return x;
+}
+
+int isempty_stack(struct stack st)
+{
+    if(st.top == -1)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+//creating of Tree
+void CreateTree()
+{
+    struct queue q;
+    create_queue(&q);
+    int x;
+    struct node *t,*p;
+    printf("Enter the root value :");
+    scanf("%d",&x);
+    root = (struct node*)malloc(sizeof(struct node));
+    root->data = x;
+    root->lchild = root->rchild = NULL;
+    enqueue(&q,root);
+    while(!isempty_queue(q))
+    {
+        p = dequeue(&q);
+        printf("Enter the left child of %d:",p->data);
+        scanf("%d",&x);
+        if(x != -1)
+        {
+            t = (struct node*)malloc(sizeof(struct node));
+            t->data = x;
+            t->lchild = t->rchild = NULL;
+            p->lchild = t;
+            enqueue(&q , t);
+        }
+        printf("Enter the right child of %d:",p->data);
+        scanf("%d",&x);
+        if(x != -1)
+        {
+            t = (struct node*)malloc(sizeof(struct node));
+            t->data = x;
+            t->lchild = t->rchild = NULL;
+            p->rchild = t;
+            enqueue(&q , t);
+        }
+    }
+}
+int Recursive_preorder(struct node *p)
+{
+    if(p)
+    {
+        printf("%d ",p->data);
+        Recursive_preorder(p->lchild);
+        Recursive_preorder(p->rchild);
+    }
+}
+int Recursive_inorder(struct node *p)
+{
+    if(p)
+    {
+        Recursive_inorder(p->lchild);
+        printf("%d ",p->data);
+        Recursive_inorder(p->rchild);
+    }
+}
+int Recursive_postorder(struct node *p)
+{
+    if(p)
+    {
+        Recursive_postorder(p->lchild);
+        Recursive_postorder(p->rchild);
+        printf("%d ",p->data);
+    }
+}
+void level_order(struct node *p)
+{
+    struct queue q;
+    create_queue(&q);
+    printf("%d ",p->data);
+    enqueue(&q,p);
+    while(p && !isempty_queue(q))
+    {
+        p = dequeue(&q);
+        if(p->lchild)
+        {
+            printf("%d ",p->lchild->data);
+            enqueue(&q,p->lchild);
+        }
+        if(p->rchild)
+        {
+            printf("%d ",p->rchild->data);
+            enqueue(&q , p->rchild);
+        }
+    }
+}
+void preorder(struct node *p)
+{
+    struct stack st;
+    Create_stack(&st);
+    while(p || !isempty_stack(st))
+    {
+        if(p)
+        {
+            printf("%d ",p->data);
+            push(&st , p);
+            p = p->lchild;
+        }
+        else
+        {
+            p = pop(&st);
+            p = p->rchild;
+        }
+    }
+}
+void inorder(struct node *p)
+{
+    struct stack st;
+    Create_stack(&st);
+    while(p || !isempty_stack(st))
+    {
+        if(p)
+        {
+            push(&st , p);
+            p = p->lchild;
+        }
+        else
+        {
+            p = pop(&st);
+            printf("%d ",p->data);
+            p = p->rchild;
+        }
+    }
+}
+int main()
+{
+    CreateTree();
+    inorder(root);
+}
