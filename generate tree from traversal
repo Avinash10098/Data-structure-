@@ -1,0 +1,59 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+struct Node
+{
+    struct Node *lchild;
+    int data;
+    struct Node *rchild;
+}*root = NULL;
+struct Node *newnode(int data)
+{
+    struct Node *node = (struct Node*)malloc(sizeof(struct Node));
+    node->data = data;
+    node->lchild = node->rchild = NULL;
+    return node;
+}
+struct Node *Buildtree(int preorder[] , int inorder[] , int inorderstart , int inorderend, int *preorderindex)
+{
+    if (inorderstart > inorderend)
+    {
+        return NULL;
+    }
+    struct Node *node = newnode(preorder[*preorderindex]);
+    (*preorderindex)++;
+    if (inorderstart == inorderend)
+    {
+        return node;
+    }
+    int index;
+    for (int i =  inorderstart ; i < inorderend ; i++)
+    {
+        if (preorder[i] == node->data)
+        {
+            index = i;
+            break;
+        }
+    }
+    node->lchild = Buildtree(preorder , inorder , inorderstart , index - 1, preorderindex);
+    node->rchild = Buildtree(preorder , inorder , index + 1 , inorderend , preorderindex );
+    return node;
+}
+void print_preorder(struct Node *p)
+{
+    if (p)
+    {
+        printf("%d ", p->data);
+        print_preorder(p->lchild);
+        print_preorder(p->rchild);
+    }
+}
+int main()
+{
+    int inorder[] = {4, 2, 5, 1, 3};
+    int preorder[] = {1, 2, 4, 5, 3};
+    int n =  5;
+    int preorderindex = 0;
+    struct Node *root = Buildtree(preorder , inorder , 0 , n - 1, &preorderindex);
+    print_preorder(root);
+}
