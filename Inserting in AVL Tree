@@ -1,0 +1,212 @@
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+struct node
+{
+  struct node *lchild;
+  int data;
+  int balance_factor;
+  struct node *rchild;
+}*root = NULL;
+
+int hight(struct node *p)
+{
+  int x = 0 , y = 0 ;
+  if (p)
+  {
+    x = hight(p->lchild);
+    y = hight(p->rchild);
+    return x > y ? x + 1 : y + 1;
+  }
+}
+
+void insert(int key)
+{
+  struct node *t = root;
+  struct node *p , *r = NULL;
+  if (root == NULL)
+  {
+    p = (struct node*)malloc(sizeof(struct node));
+    p->data = key;
+    p->balance_factor = 0;
+    p->lchild = p->rchild = NULL;
+    root = p;
+    return;
+  }
+  while (t)
+  {
+    r = t;
+    if (key == t->data)
+    {
+      return;
+    }
+    else if (key < t->data)
+    {
+      t = t->lchild;
+    }
+    else
+    {
+      t = t->rchild;
+    }
+  }
+  p = (struct node*)malloc(sizeof(struct node));
+  p->data = key;
+  p->lchild = p->rchild = NULL;
+  if (key  < r->data)
+  {
+    r->lchild = p;
+  }
+  else
+  {
+    r->rchild = p;
+  }
+}
+
+struct node *LL(struct node *p)
+{
+  int lbf, rbf;
+  struct node *pl = p->lchild;
+  pl->balance_factor = 0;
+  p->lchild = pl->rchild;
+  pl->rchild = p;
+  lbf = hight(p->lchild) + 1;
+  rbf = hight(p->rchild) + 1;
+  p->balance_factor = lbf - rbf;
+  if (p == root)
+  {
+    root = pl;
+  }
+  return pl;
+}
+
+struct node *LR(struct node *p)
+{
+  int lbf , rbf;
+  struct node *pl = p->lchild;
+  struct node *plr = pl->rchild;
+  plr->balance_factor = 0;
+  p->lchild = plr->rchild;
+  pl->rchild = plr->lchild;
+  plr->lchild = pl;
+  plr->rchild = p;
+
+  lbf = hight(p->lchild) + 1;
+  rbf = hight(p->rchild) + 1;
+  p->balance_factor = lbf - rbf;
+
+  lbf = hight(pl->lchild) + 1;
+  rbf = hight(pl->rchild) + 1;
+  pl->balance_factor = lbf - rbf;
+  if (p == root)
+  {
+    root = plr;
+  }
+  return plr;
+}
+
+struct node *RR(struct node *p)
+{
+  int lbf, rbf;
+  struct node *pr = p->rchild;
+  pr->balance_factor = 0;
+  p->rchild = pr->lchild;
+  pr->lchild = p;
+  lbf = hight(p->lchild) + 1;
+  rbf = hight(p->rchild) + 1;
+  p->balance_factor = lbf - rbf;
+  if (p == root)
+  {
+    root = pr;
+  }
+  return pr;
+}
+
+struct node *RL(struct node *p)
+{
+  int lbf, rbf;
+  struct node *pr = p->rchild;
+  struct node *prl = pr->lchild;
+  prl->balance_factor = 0;
+
+
+  p->rchild = prl->lchild;
+  pr->lchild = prl->rchild;
+  prl->rchild = pr;
+  prl->lchild = p;
+  lbf = hight(p->lchild) + 1;
+  rbf = hight(p->rchild) + 1;
+  p->balance_factor = lbf - rbf;
+  lbf = hight(pr->lchild) + 1;
+  rbf = hight(pr->rchild) + 1;
+  pr->balance_factor = lbf - rbf;
+  if (p == root)
+  {
+    root = prl;
+  }
+  return prl;
+}
+
+struct node *Rinsert(struct node *p , int key)
+{
+  struct node *t;
+  int lbf, rbf;
+  if (p == NULL)
+  {
+    t = (struct node*)malloc(sizeof(struct node));
+    t->data = key;
+    t->balance_factor = 0;
+    t->rchild = t->lchild = NULL;
+    return t;
+  }
+  if (key < p->data)
+  {
+    p->lchild = Rinsert(p->lchild , key);
+  }
+  else if (key > p->data)
+  {
+    p->rchild = Rinsert(p->rchild , key);
+  }
+  lbf = hight(p->lchild) + 1;
+  rbf = hight(p->rchild) + 1;
+  p->balance_factor = lbf - rbf;
+  if (p->balance_factor == 2 && p->lchild->balance_factor == 1)
+  {
+    return LL(p);
+  }
+  if (p->balance_factor == 2 && p->lchild->balance_factor == -1)
+  {
+    return LR(p);
+  }
+  if (p->balance_factor == -2 && p->rchild->balance_factor == 1)
+  {
+    return RL(p);
+  }
+  if (p->balance_factor == -2 && p->rchild->balance_factor == - 1)
+  {
+    return RR(p);
+  }
+  return p;
+}
+int inorder(struct node *p)
+{
+  if (p)
+  {
+
+    inorder(p->lchild);
+    printf("%d ", p->data);
+    inorder(p->rchild);
+  }
+}
+
+int main()
+{
+  insert(30);
+  Rinsert(root , 50);
+  Rinsert(root , 40);
+  Rinsert(root , 20);
+  Rinsert(root , 10);
+  Rinsert(root , 42);
+  Rinsert(root , 46);
+  inorder(root);
+}
