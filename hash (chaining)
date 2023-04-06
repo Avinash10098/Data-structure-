@@ -1,0 +1,74 @@
+#include <bits/stdc++.h>
+struct node
+{
+  int data;
+  struct node *next;
+};
+void sorted_insert(struct node **h , int key)
+{
+  struct node *t , *q = NULL , *p = *h;
+  t = (struct node*)malloc(sizeof(struct node));
+  t->data = key;
+  t->next  = NULL;
+  if (*h == NULL)
+  {
+    *h = t;
+  }
+  else
+  {
+    while (p && p->data < key)
+    {
+      q = p;
+      p = p->next;
+    }
+    if (p == *h)
+    {
+      t->next = *h;
+      *h = t;
+    }
+    else
+    {
+      t->next = q->next;
+      q->next = t;
+    }
+  }
+}
+struct node *search(struct node *p , int key)
+{
+  while (p)
+  {
+    if (key == p->data)
+    {
+      return p;
+    }
+    p = p->next;
+  }
+  return NULL;
+}
+int hash(int key)
+{
+  return key % 10;
+}
+void insert(struct node *h[]  , int key)
+{
+  int index = hash(key);
+  sorted_insert(&h[index] , key);
+}
+int main()
+{
+  struct node *ht[10];
+  struct node *p;
+  int x;
+  int n = 10;
+  for (int i = 0 ; i < n ; i++)
+  {
+    ht[i] = NULL;
+  }
+  for (int i = 0 ; i < n ; i++)
+  {
+    scanf("%d", &x);
+    insert(ht, x);
+  }
+  p = search(ht[hash(12)], 12);
+  printf("%d\n", p->data);
+}
