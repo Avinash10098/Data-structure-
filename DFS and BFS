@@ -1,0 +1,97 @@
+#include <bits/stdc++.h>
+struct queue
+{
+  int size;
+  int front;
+  int rare;
+  int *q;
+};
+void create(struct queue *q)
+{
+  q->size = 100;
+  q->front = q->rare = -1;
+  q->q = (int *)malloc(q->size * sizeof(int));
+}
+int enqueue(struct queue *q , int x)
+{
+  if (q->rare == q->size - 1)
+  {
+    printf("no\n");
+  }
+  else
+  {
+    q->rare++;
+    q->q[q->rare] = x;
+  }
+}
+int dequeue(struct queue *q)
+{
+  int x = -1;
+  if (q->front == q->rare)
+  {
+    printf("no\n");
+  }
+  else
+  {
+    q->front++;
+    x = q->q[q->front];
+  }
+  return x;
+}
+int isempty(struct queue q)
+{
+  return q.front ==  q.rare;
+}
+void BFS(int g[][7] , int start , int n)
+{
+  struct queue q;
+  create(&q);
+  int i = start , j , u;
+  int visited[7] = {0};
+  printf("%d ", i);
+  visited[i] = 1;
+  enqueue(&q, i);
+  while (!isempty(q))
+  {
+    u = dequeue(&q);
+    for (j = 1 ; j <= 7 ; j++)
+    {
+      if (visited[j] == 0 && g[u][j] == 1)
+      {
+        printf("%d ", j);
+        visited[j] = 1;
+        enqueue(&q, j);
+      }
+    }
+  }
+}
+void DFS(int g[][7] , int start , int n)
+{
+  int i = start , j;
+  static int visited[7] = {0};
+  if (visited[i] == 0)
+  {
+    printf("%d ", i);
+    visited[i] = 1; \
+    for (j = 1 ; j <= 7 ; j++)
+    {
+      if (visited[j] == 0 && g[i][j] == 1)
+      {
+        DFS(g, j, n);
+      }
+    }
+  }
+}
+int main()
+{
+  int G[7][7] = {{0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 1, 1, 0, 0, 0},
+    {0, 1, 0, 0, 1, 0, 0},
+    {0, 1, 0, 0, 1, 0, 0},
+    {0, 0, 1, 1, 0, 1, 1},
+    {0, 0, 0, 0, 1, 0, 0},
+    {0, 0, 0, 0, 1, 0, 0}
+  };
+  DFS(G , 4 , 7);
+}
+
