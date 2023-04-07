@@ -1,0 +1,115 @@
+#include<iostream>
+#define I INT_MAX
+#include <bits/stdc++.h>
+struct node
+{
+    struct node *prev;
+    int data;
+    struct node *next;
+}*first = NULL;
+void Create(int a[] ,int n)
+{
+    struct node *last , *t;
+    first = (struct node*)malloc(sizeof(struct node));
+    first->data = a[0];
+    first->next = first->prev = NULL;
+    last = first;
+    for(int i = 1 ; i < n ; i++)
+    {
+        t = (struct node*)malloc(sizeof(struct node));
+        t->data = a[i];
+        t->prev = last;
+        t->next = NULL;
+        last->next = t;
+        last = t;
+    }
+}
+int count(struct node *p)
+{
+    int c = 0;
+    while(p)
+    {
+        c++;
+        p=p->next;
+    }
+    return c;
+}
+void insert(struct node *p ,int key , int pos)
+{
+    struct node *t;
+    if(pos < 0 || pos > count(p))
+    {
+        return;
+    }
+    t = (struct node*)malloc(sizeof(struct node));
+    t->data = key;
+    if(pos == 0)
+    {
+        t->next = first;
+        first->prev = t;
+        t->prev = NULL;
+        first = t;
+    }
+    else
+    {
+        for(int i = 0 ; i < pos - 1 ; i++)
+        {
+            p = p->next;
+        }
+        t->next = p->next;
+        t->prev = p;
+        if(p->next)
+        {
+            p->next->prev = t;
+        }
+        p->next = t;
+
+    }
+}
+void Delete(struct node *p ,int pos)
+{
+    struct node *q;
+    if(pos < 0 || pos > count(p))
+    {
+        return;
+    }
+    else
+    {
+        if(pos == 1)
+        {
+            first = p;
+            first = first->next;
+            first->prev = NULL;
+            free(p);
+        }
+        else if(pos > 1)
+        {
+            for(int i = 0 ; i < pos - 1 ; i++)
+            {
+                p = p->next;
+            }
+            p->prev->next = p->next;
+            if(p->next)
+            {
+                p->next->prev = p->prev;
+            }
+            free(p);
+        }
+    }
+}
+void display(struct node *p)
+{
+    while(p)
+    {
+        printf("%d ",p->data);
+        p = p->next;
+    }
+}
+int main()
+{
+    int a[] = {1,8,2,4,9};
+    Create(a,5);
+    //insert(first , 34,5);
+    Delete(first , 5);
+    display(first);
+}
